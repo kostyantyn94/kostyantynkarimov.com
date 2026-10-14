@@ -29,4 +29,6 @@ Pin new packages to a release at least two weeks old (`npm install --save-exact 
 
 Commits are authored as Kostyantyn Karimov (repo-local config) with a `Co-Authored-By` trailer for Claude.
 Push to `github.com/kostyantyn94/kostyantynkarimov.com` as `kostyantyn94`: the active `gh` account on this machine
-is a different one, so use `GH_TOKEN=$(gh auth token -u kostyantyn94)` for `gh` commands.
+is a different one, so prefix both `gh` and `git push` with `GH_TOKEN=$(gh auth token -u kostyantyn94)`.
+That token has no `workflow` scope yet, so `.github/workflows/ci.yml` stays local and untracked until Kostya runs
+`gh auth refresh -h github.com -s workflow -u kostyantyn94`.
