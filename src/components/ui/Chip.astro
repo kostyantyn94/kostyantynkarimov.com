@@ -1,0 +1,21 @@
+---
+import { cx } from '../../lib/cx';
+
+interface Props {
+  /** Emphasized chip, e.g. the main tool of a project. */
+  strong?: boolean;
+  class?: string;
+}
+
+const { strong = false, class: className } = Astro.props;
+---
+
+<span
+  class={cx(
+    'inline-flex items-center rounded-md border px-2 py-0.5 text-xs leading-5 font-medium',
+    strong ? 'border-border-strong bg-surface-2 text-ink' : 'border-border bg-surface text-muted',
+    className,
+  )}
+>
+  <slot />
+</span>

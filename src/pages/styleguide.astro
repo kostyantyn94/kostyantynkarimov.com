@@ -1,0 +1,347 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import Chip from '../components/ui/Chip.astro';
+import CodeBlock from '../components/ui/CodeBlock.astro';
+import KeyFigures from '../components/ui/KeyFigures.astro';
+import LevelBadge from '../components/ui/LevelBadge.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import StatusPill, { type Status } from '../components/ui/StatusPill.astro';
+import ThemeToggle from '../components/ui/ThemeToggle.astro';
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import Bot from '@lucide/astro/icons/bot';
+import Database from '@lucide/astro/icons/database';
+import Download from '@lucide/astro/icons/download';
+import Mail from '@lucide/astro/icons/mail';
+import Play from '@lucide/astro/icons/play';
+import Workflow from '@lucide/astro/icons/workflow';
+
+const swatches = [
+  { token: 'bg', use: 'Page background' },
+  { token: 'surface', use: 'Cards, code blocks' },
+  { token: 'surface-2', use: 'Nested surfaces, hover' },
+  { token: 'border', use: 'Hairlines' },
+  { token: 'border-strong', use: 'Inputs, emphasis' },
+  { token: 'ink', use: 'Text, primary button' },
+  { token: 'muted', use: 'Secondary text' },
+  { token: 'faint', use: 'Decorative only' },
+  { token: 'accent', use: 'Markers, small details' },
+  { token: 'ok', use: 'Pipeline: done' },
+  { token: 'review', use: 'Pipeline: needs a human' },
+  { token: 'error', use: 'Pipeline: failed' },
+];
+
+const figures = [
+  { value: '82%', label: 'of software items classified without an LLM call' },
+  { value: '67%', label: 'of leads decided by rules, no model involved' },
+  { value: '0', label: 'LLM and CRM calls when the same data arrives again' },
+  { value: '4+ yrs', label: 'working remotely' },
+];
+
+const pipeline: { name: string; icon: typeof Workflow; status: Status; meta: string }[] = [
+  { name: 'Webhook', icon: Workflow, status: 'ok', meta: '202 · 4 ms' },
+  { name: 'Normalize', icon: Workflow, status: 'ok', meta: '3 fields fixed' },
+  { name: 'Rules', icon: Database, status: 'review', meta: 'no rule matched' },
+  { name: 'LLM', icon: Bot, status: 'running', meta: 'claude-haiku-5-5' },
+  { name: 'CRM', icon: Database, status: 'idle', meta: 'HubSpot v3' },
+];
+
+const tsSample = `const ALIASES: Record<string, string> = {
+  email_address: 'email',
+  e_mail: 'email',
+  name: 'full_name',
+  title: 'job_title',
+};
+
+// Same lead from any form: one field name, trimmed, email lowercased.
+export function normalizeLead(raw: Record<string, unknown>) {
+  const lead: Record<string, string> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    const field = key.trim().toLowerCase();
+    if (typeof value === 'string' && value.trim()) {
+      lead[ALIASES[field] ?? field] = value.trim();
+    }
+  }
+  if (lead.email) lead.email = lead.email.toLowerCase();
+  return lead;
+}`;
+
+const sqlSample = `-- Hybrid search: vector distance + full-text rank, fused with RRF
+WITH semantic AS (
+  SELECT id, row_number() OVER (ORDER BY distance) AS rank
+  FROM (
+    SELECT id, embedding <=> $2 AS distance
+    FROM chunks
+    ORDER BY distance
+    LIMIT 20
+  ) nearest
+),
+keyword AS (
+  SELECT id, row_number() OVER (ORDER BY score DESC) AS rank
+  FROM (
+    SELECT id, ts_rank(tsv, query) AS score
+    FROM chunks, websearch_to_tsquery('english', $1) AS query
+    WHERE tsv @@ query
+    ORDER BY score DESC
+    LIMIT 20
+  ) matched
+)
+SELECT c.id, c.source,
+       coalesce(1.0 / (60 + s.rank), 0) + coalesce(1.0 / (60 + k.rank), 0) AS rrf
+FROM semantic s
+FULL JOIN keyword k USING (id)
+JOIN chunks c USING (id)
+ORDER BY rrf DESC
+LIMIT 5;`;
+
+const jsonSample = `{
+  "decision": "qualified",
+  "confidence": 0.86,
+  "reasons": [
+    "B2B SaaS company, 50-200 employees",
+    "Job title matches the buyer persona"
+  ],
+  "missing": []
+}`;
+---
+
+<BaseLayout
+  title="Style guide · kostyantynkarimov.com"
+  description="Design tokens and base components of kostyantynkarimov.com."
+  noindex
+>
+  <header class="sticky top-0 z-10 border-b border-border bg-bg/85 backdrop-blur">
+    <div class="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
+      <p class="truncate font-mono text-sm text-muted">
+        <a href="/" class="text-ink hover:underline">
+          kostyantynkarimov.com
+        </a>{' '}
+        / style guide
+      </p>
+      <ThemeToggle />
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl space-y-24 px-4 py-16 sm:px-6 sm:py-20">
+    <SectionHeading
+      as="h1"
+      eyebrow="Base"
+      title="Style guide"
+      lead="Tokens and components every page is built from. Same dark monochrome system as the CV: light theme is the CV's main column, dark theme is its sidebar."
+    />
+
+    <!-- Color -->
+    <section class="space-y-8">
+      <SectionHeading
+        eyebrow="01 · Color"
+        title="Palette"
+        lead="One ink, greys, and three status colors that only mark pipeline states."
+      />
+      <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {swatches.map(({ token, use }) => (
+          <li class="overflow-hidden rounded-xl border border-border">
+            <div class="h-16 border-b border-border" style={{ background: `var(--${token})` }} />
+            <div class="space-y-0.5 px-3 py-2.5">
+              <p class="font-mono text-xs font-medium text-ink">--{token}</p>
+              <p class="font-mono text-xs text-muted" data-swatch={token}>
+                &nbsp;
+              </p>
+              <p class="text-xs text-muted">{use}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- Typography -->
+    <section class="space-y-8">
+      <SectionHeading
+        eyebrow="02 · Type"
+        title="Typography"
+        lead="Inter for text, JetBrains Mono for code, data and labels."
+      />
+      <div class="space-y-6 border-l border-border pl-5">
+        <p class="text-display font-bold">Kostyantyn Karimov</p>
+        <p class="text-4xl font-semibold tracking-tight">Heading 1 · 36px</p>
+        <p class="text-2xl font-semibold tracking-tight sm:text-3xl">Heading 2 · 30px</p>
+        <p class="text-xl font-semibold">Heading 3 · 20px</p>
+        <p class="max-w-prose text-base leading-relaxed text-ink">
+          Body · 16px. I wire AI agents, LLMs and CRMs into automations that work in production, not just in a demo.
+          Rules first and the model only where needed.
+        </p>
+        <p class="max-w-prose text-sm leading-relaxed text-muted">
+          Small · 14px muted. Every AI answer is validated against a schema, and a human handles the doubtful cases.
+        </p>
+        <p class="font-mono text-sm text-ink">
+          Mono · POST /webhook/lead → 202 {'{'} "lead_id": 51 {'}'}
+        </p>
+      </div>
+    </section>
+
+    <!-- Buttons -->
+    <section class="space-y-8">
+      <SectionHeading eyebrow="03 · Actions" title="Buttons and links" />
+      <div class="flex flex-wrap items-center gap-3">
+        <Button href="#">
+          <Play aria-hidden="true" /> Try the playground
+        </Button>
+        <Button href="#" variant="secondary">
+          <Download aria-hidden="true" /> Download CV
+        </Button>
+        <Button href="#" variant="ghost">
+          <Mail aria-hidden="true" /> Email me
+        </Button>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <Button size="sm">Run</Button>
+        <Button size="sm" variant="secondary">
+          Reset
+        </Button>
+        <Button size="sm" variant="ghost">
+          Show code
+        </Button>
+        <Button size="sm" disabled>
+          Disabled
+        </Button>
+      </div>
+      <p class="text-base text-muted">
+        Inline link:{' '}
+        <a href="#" class="text-ink underline decoration-border-strong hover:decoration-ink">
+          github.com/kostyantyn94
+        </a>
+      </p>
+    </section>
+
+    <!-- Labels -->
+    <section class="space-y-8">
+      <SectionHeading eyebrow="04 · Labels" title="Chips, levels, statuses" />
+      <div class="flex flex-wrap gap-2">
+        <Chip strong>n8n</Chip>
+        <Chip>PostgreSQL</Chip>
+        <Chip>pgvector</Chip>
+        <Chip>RAG</Chip>
+        <Chip>Claude API</Chip>
+        <Chip>ElevenLabs</Chip>
+        <Chip>TypeScript</Chip>
+      </div>
+      <div class="flex flex-wrap gap-x-8 gap-y-3">
+        <LevelBadge level={1} />
+        <LevelBadge level={2} />
+        <LevelBadge level={3} />
+        <LevelBadge level={4} />
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <StatusPill status="ok" />
+        <StatusPill status="review" />
+        <StatusPill status="error" />
+        <StatusPill status="running" />
+        <StatusPill status="idle" />
+      </div>
+    </section>
+
+    <!-- Data -->
+    <section class="space-y-8">
+      <SectionHeading eyebrow="05 · Data" title="Key figures" lead="A strip with hairline dividers, as in the CV." />
+      <KeyFigures figures={figures} />
+    </section>
+
+    <!-- Cards -->
+    <section class="space-y-8">
+      <SectionHeading eyebrow="06 · Cards" title="Demo and project cards" />
+      <div class="grid gap-4 md:grid-cols-2">
+        <Card href="#" class="group flex flex-col gap-4">
+          <LevelBadge level={3} />
+          <div class="space-y-2">
+            <h3 class="text-lg font-semibold text-ink">Ask my CV</h3>
+            <p class="text-sm leading-relaxed text-muted">
+              Switch between keyword, vector and hybrid search, see the passages each one found, and get an answer built
+              only from them, with sources.
+            </p>
+          </div>
+          <p class="mt-auto border-t border-border pt-4 text-xs leading-relaxed text-muted">
+            <span class="font-medium text-ink">What this proves:</span> RAG on a vector database, embeddings, pgvector,
+            hybrid ranking.
+          </p>
+          <span class="inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+            Try it <ArrowRight size={16} class="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </span>
+        </Card>
+        <Card href="#" class="group flex flex-col gap-4">
+          <p class="font-mono text-xs text-muted">Oct 2026 · github.com/kostyantyn94/lead-pipeline-n8n</p>
+          <div class="space-y-2">
+            <h3 class="text-lg font-semibold text-ink">Lead pipeline: intake → rules → LLM → CRM</h3>
+            <p class="text-sm leading-relaxed text-muted">
+              Inbound leads validated, deduplicated, enriched, qualified and pushed into HubSpot without manual work.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <Chip strong>n8n</Chip>
+            <Chip>PostgreSQL 17</Chip>
+            <Chip>HubSpot API v3</Chip>
+            <Chip>Docker</Chip>
+          </div>
+          <p class="mt-auto border-t border-border pt-4 font-mono text-xs text-muted">
+            <span class="text-ink">67%</span> decided without the model{' · '}
+            <span class="text-ink">0</span> calls on a repeat run
+          </p>
+        </Card>
+      </div>
+    </section>
+
+    <!-- Pipeline -->
+    <section class="space-y-8">
+      <SectionHeading
+        eyebrow="07 · Pipeline"
+        title="Workflow nodes"
+        lead="Static preview of how the Live Pipeline demo will look. The real one runs step by step."
+      />
+      <ol class="flex items-stretch gap-2 overflow-x-auto pb-2">
+        {pipeline.map(({ name, icon: Icon, status, meta }, index) => (
+          <li class="flex shrink-0 items-center gap-2">
+            <div class="w-40 rounded-xl border border-border bg-surface p-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="flex items-center gap-2 text-sm font-medium text-ink">
+                  <Icon size={16} class="text-muted" aria-hidden="true" />
+                  {name}
+                </span>
+              </div>
+              <StatusPill status={status} class="mt-2.5" />
+              <p class="mt-2 truncate font-mono text-[11px] text-muted">{meta}</p>
+            </div>
+            {index < pipeline.length - 1 && <ArrowRight size={16} class="text-faint" aria-hidden="true" />}
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <!-- Code -->
+    <section class="space-y-8">
+      <SectionHeading
+        eyebrow="08 · Code"
+        title="Code blocks"
+        lead="Highlighted at build time by Shiki, both themes in one render, copy button."
+      />
+      <CodeBlock code={tsSample} lang="ts" title="src/demos/webhook/normalize.ts" />
+      <div class="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <CodeBlock code={sqlSample} lang="sql" title="hybrid-search.sql" />
+        <CodeBlock code={jsonSample} lang="json" title="LLM output, validated" />
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Print each token's current value under its swatch; refresh on theme change.
+    const printSwatches = () => {
+      const styles = getComputedStyle(document.documentElement);
+      for (const element of document.querySelectorAll<HTMLElement>('[data-swatch]')) {
+        element.textContent = styles.getPropertyValue(`--${element.dataset.swatch}`).trim();
+      }
+    };
+    printSwatches();
+    new MutationObserver(printSwatches).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+import { cx } from '../../lib/cx';
+
+const LEVELS = { 1: 'Easy', 2: 'Medium', 3: 'Hard', 4: 'Expert' } as const;
+
+interface Props {
+  level: keyof typeof LEVELS;
+  class?: string;
+}
+
+const { level, class: className } = Astro.props;
+---
+
+<span class={cx('inline-flex items-center gap-2 font-mono text-xs text-muted', className)}>
+  <span class="flex items-end gap-0.5" aria-hidden="true">
+    {[1, 2, 3, 4].map((step) => (
+      <span
+        class={cx('w-1 rounded-full', step <= level ? 'bg-ink' : 'bg-border-strong')}
+        style={{ height: `${6 + step * 2}px` }}
+      />
+    ))}
+  </span>
+  <span>
+    Level {level} · {LEVELS[level]}
+  </span>
+</span>

@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+import ThemeToggle from '../components/ui/ThemeToggle.astro';
+---
+
+<!-- Placeholder until the real home page is built (phase 2). -->
+<BaseLayout
+  title="Kostyantyn Karimov · AI Automation & Agents Engineer"
+  description="I connect AI voice agents, LLMs, RAG and CRMs with n8n, JavaScript and REST APIs, and keep them running in production."
+>
+  <main class="mx-auto flex min-h-dvh max-w-5xl flex-col justify-center gap-6 px-4 py-16 sm:px-6">
+    <div class="absolute top-4 right-4 sm:right-6">
+      <ThemeToggle />
+    </div>
+    <p class="font-mono text-xs tracking-[0.12em] text-muted uppercase">Site in progress</p>
+    <h1 class="text-display font-bold">Kostyantyn Karimov</h1>
+    <p class="text-xl font-semibold text-ink">AI Automation &amp; Agents Engineer</p>
+    <p class="max-w-xl text-base leading-relaxed text-muted">
+      n8n · LLM pipelines · RAG &amp; vector search · AI voice agents ↔ CRM · JavaScript / TypeScript
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <Button href="mailto:kostyantyn.karimov@gmail.com">Email me</Button>
+      <Button href="/styleguide" variant="secondary">
+        Style guide
+      </Button>
+    </div>
+  </main>
+</BaseLayout>

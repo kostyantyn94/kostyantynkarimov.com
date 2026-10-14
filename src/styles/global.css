@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. Source of truth: the "dark monochrome" CV (cv_dark_mono.html).
+ * Light theme = the CV's main column, dark theme = the CV's sidebar.
+ * Status colors are functional only (pipeline states), never decoration.
+ */
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f7f7f9;
+  --surface-2: #eff0f3;
+  --border: #e2e3e8;
+  --border-strong: #c9ccd3;
+  --ink: #1b1f27;
+  --muted: #5f6470;
+  --faint: #a6abb5; /* decorative only (rules, markers), never body text */
+  --accent: #334155;
+  --ok: #166534;
+  --review: #92400e;
+  --error: #b91c1c;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #111214;
+  --surface: #1a1c21;
+  --surface-2: #22252b;
+  --border: #2a2d34;
+  --border-strong: #3a3e47;
+  --ink: #e8e9ec;
+  --muted: #9a9ea8;
+  --faint: #5b5f69;
+  --accent: #c9ccd3;
+  --ok: #4ade80;
+  --review: #fbbf24;
+  --error: #f87171;
+}
+
+@theme {
+  /* Only the palette above: no default Tailwind colors, so nothing off-brand slips in. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --text-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-ok: var(--ok);
+  --color-review: var(--review);
+  --color-error: var(--error);
+}
+
+@layer base {
+  html {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--bg);
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--ink) 18%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    text-underline-offset: 3px;
+  }
+
+  /* No coding ligatures: visitors must see `<=>` and `===` as typed, not as arrows. */
+  code,
+  kbd,
+  pre,
+  samp,
+  .font-mono {
+    font-variant-ligatures: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * Code blocks: Shiki renders both themes into CSS variables (defaultColor={false}),
+ * and the active one is picked by data-theme. The background is ours, not the theme's.
+ */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+}
+
+[data-theme='dark'] .astro-code,
+[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+}
+
+.astro-code {
+  background-color: transparent !important;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  tab-size: 2;
+}

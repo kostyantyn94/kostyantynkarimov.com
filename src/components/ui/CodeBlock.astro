@@ -1,0 +1,67 @@
+---
+import { Code } from 'astro:components';
+import type { ComponentProps } from 'astro/types';
+import Copy from '@lucide/astro/icons/copy';
+import Check from '@lucide/astro/icons/check';
+import { cx } from '../../lib/cx';
+
+type Lang = ComponentProps<typeof Code>['lang'];
+
+interface Props {
+  code: string;
+  lang: Lang;
+  /** File name or caption; the language is shown when it is missing. */
+  title?: string;
+  class?: string;
+}
+
+const { code, lang, title, class: className } = Astro.props;
+---
+
+<figure class={cx('code-block overflow-hidden rounded-xl border border-border bg-surface', className)}>
+  <figcaption class="flex h-10 items-center justify-between gap-3 border-b border-border pr-2 pl-4">
+    <span class="truncate font-mono text-xs text-muted">{title ?? lang}</span>
+    <span class="flex shrink-0 items-center gap-2">
+      {title && <span class="font-mono text-[11px] tracking-wider text-muted uppercase">{lang}</span>}
+      <button
+        type="button"
+        class="copy-code inline-flex size-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-2 hover:text-ink"
+        aria-label="Copy code"
+        title="Copy code"
+      >
+        <Copy class="copy-idle" size={14} aria-hidden="true" />
+        <Check class="copy-done hidden" size={14} aria-hidden="true" />
+      </button>
+    </span>
+  </figcaption>
+  <Code code={code} lang={lang} themes={{ light: 'vitesse-light', dark: 'vitesse-dark' }} defaultColor={false} />
+</figure>
+
+<style>
+  .code-block :global(.astro-code) {
+    margin: 0;
+    padding: 0.875rem 1rem;
+  }
+</style>
+
+<script>
+  // One delegated listener for every code block on the page.
+  document.addEventListener('click', async (event) => {
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>('.copy-code');
+    const code = button?.closest('figure')?.querySelector('pre');
+    if (!button || !code) return;
+    try {
+      await navigator.clipboard.writeText(code.innerText);
+    } catch {
+      return;
+    }
+    button.querySelector('.copy-idle')?.classList.add('hidden');
+    button.querySelector('.copy-done')?.classList.remove('hidden');
+    button.setAttribute('aria-label', 'Copied');
+    setTimeout(() => {
+      button.querySelector('.copy-idle')?.classList.remove('hidden');
+      button.querySelector('.copy-done')?.classList.add('hidden');
+      button.setAttribute('aria-label', 'Copy code');
+    }, 1500);
+  });
+</script>

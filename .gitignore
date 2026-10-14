@@ -1,0 +1,24 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+
+# environment variables and Cloudflare local state
+.env
+.env.*
+!.env.example
+.dev.vars
+.wrangler/
+
+# private planning notes (never publish)
+notes/
+
+# editors and OS
+.idea/
+.DS_Store

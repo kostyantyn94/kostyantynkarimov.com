@@ -1,0 +1,61 @@
+---
+import { cx } from '../../lib/cx';
+
+type Variant = 'primary' | 'secondary' | 'ghost';
+type Size = 'sm' | 'md';
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  size?: Size;
+  /** Opens in a new tab with rel="noopener noreferrer". */
+  external?: boolean;
+  download?: boolean | string;
+  type?: 'button' | 'submit';
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  external = false,
+  download,
+  type = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const variants: Record<Variant, string> = {
+  primary: 'bg-ink text-bg hover:bg-ink/85',
+  secondary: 'border border-border-strong bg-bg text-ink hover:border-ink/40 hover:bg-surface',
+  ghost: 'text-muted hover:bg-surface hover:text-ink',
+};
+
+const sizes: Record<Size, string> = {
+  sm: 'h-8 gap-1.5 px-3 text-sm',
+  md: 'h-10 gap-2 px-4 text-[0.9375rem]',
+};
+
+const classes = cx(
+  'inline-flex shrink-0 select-none items-center justify-center rounded-lg font-medium whitespace-nowrap',
+  'transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50',
+  '[&_svg]:size-4 [&_svg]:shrink-0',
+  variants[variant],
+  sizes[size],
+  className,
+);
+
+const linkAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+{href ? (
+  <a href={href} class={classes} download={download} {...linkAttrs} {...rest}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={classes} {...rest}>
+    <slot />
+  </button>
+)}

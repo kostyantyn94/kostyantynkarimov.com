@@ -1,0 +1,39 @@
+---
+import { cx } from '../../lib/cx';
+
+export type Status = 'ok' | 'review' | 'error' | 'running' | 'idle';
+
+interface Props {
+  status: Status;
+  class?: string;
+}
+
+const { status, class: className } = Astro.props;
+
+const pill: Record<Status, string> = {
+  ok: 'border-ok/30 bg-ok/10 text-ok',
+  review: 'border-review/30 bg-review/10 text-review',
+  error: 'border-error/30 bg-error/10 text-error',
+  running: 'border-border-strong bg-surface-2 text-ink',
+  idle: 'border-border bg-surface text-muted',
+};
+
+const dot: Record<Status, string> = {
+  ok: 'bg-ok',
+  review: 'bg-review',
+  error: 'bg-error',
+  running: 'bg-ink animate-pulse',
+  idle: 'bg-faint',
+};
+---
+
+<span
+  class={cx(
+    'inline-flex items-center gap-1.5 rounded-full border px-2 font-mono text-[11px] leading-5 font-medium',
+    pill[status],
+    className,
+  )}
+>
+  <span class={cx('size-1.5 rounded-full', dot[status])} aria-hidden="true"></span>
+  <slot>{status}</slot>
+</span>
