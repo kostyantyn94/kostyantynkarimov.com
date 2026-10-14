@@ -8,6 +8,8 @@ export const profile = {
   location: 'Uzhhorod, Ukraine',
   timezone: 'UTC+2',
   availability: 'Open to remote work',
+  remote: '4+ years, fully remote',
+  languages: 'English B2+ · German B2 · Ukrainian, Russian native',
   email: 'kostyantyn.karimov@gmail.com',
   links: {
     github: 'https://github.com/kostyantyn94',

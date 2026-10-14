@@ -32,11 +32,13 @@ const labelClass = 'font-mono text-[11px] tracking-wider text-muted uppercase';
         <AvailabilityBadge href={`mailto:${profile.email}`}>
           {profile.availability} · {profile.timezone}
         </AvailabilityBadge>
+        <!-- Name first: it is what a recruiter looks for in the first seconds. -->
         <h1 class="mt-6 max-w-4xl text-display font-semibold">
-          AI agents, LLMs and CRMs, <span class="text-muted">wired into automations that work in production.</span>
+          {profile.name}
+          <span class="block text-muted">{profile.title}</span>
         </h1>
         <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-          {profile.title}. {profile.focus.join(' · ')}.
+          {profile.pitch} Don't take my word for it: run them below.
         </p>
         <div class="mt-8 flex flex-wrap gap-3">
           <Button href="#playground">
@@ -61,20 +63,21 @@ const labelClass = 'font-mono text-[11px] tracking-wider text-muted uppercase';
             loading="eager"
             class="size-20 rounded-xl object-cover"
           />
-          <h2 class="mt-5 text-lg font-semibold tracking-tight">{profile.name}</h2>
-          <p class="text-sm text-muted">{profile.title}</p>
+          <!-- What a remote employer checks: time zone overlap, remote track record, languages. -->
           <dl class="mt-6 space-y-3 border-t border-border pt-5 text-sm lg:mt-auto">
-            <div>
-              <dt class={labelClass}>Now</dt>
-              <dd class="mt-0.5">
-                {profile.current.role}, {profile.current.company}
-              </dd>
-            </div>
             <div>
               <dt class={labelClass}>Based in</dt>
               <dd class="mt-0.5">
                 {profile.location} · {profile.timezone}
               </dd>
+            </div>
+            <div>
+              <dt class={labelClass}>Remote</dt>
+              <dd class="mt-0.5">{profile.remote}</dd>
+            </div>
+            <div>
+              <dt class={labelClass}>Languages</dt>
+              <dd class="mt-0.5">{profile.languages}</dd>
             </div>
           </dl>
         </Card>
