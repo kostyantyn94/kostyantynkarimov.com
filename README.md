@@ -6,7 +6,7 @@ Not a business card but a playground: visitors run live demos, from a webhook no
 intake → rules → LLM → CRM pipeline, a SQL playground on real PostgreSQL in the browser and RAG over a
 vector database. Each demo shows the code that just ran.
 
-> Status: base set up (stack, design tokens, components). Pages and demos are in progress.
+> Status: home page done. The demos go live one by one.
 
 ## Stack
 

@@ -1,50 +1,71 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import Approach from '../components/home/Approach.astro';
+import Contact from '../components/home/Contact.astro';
+import Experience from '../components/home/Experience.astro';
+import Overview from '../components/home/Overview.astro';
+import Playground from '../components/home/Playground.astro';
+import Projects from '../components/home/Projects.astro';
+import Skills from '../components/home/Skills.astro';
 import AvailabilityBadge from '../components/ui/AvailabilityBadge.astro';
 import Backdrop from '../components/ui/Backdrop.astro';
 import Button from '../components/ui/Button.astro';
-import Card from '../components/ui/Card.astro';
-import PipelineMini from '../components/ui/PipelineMini.astro';
-import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
 import Download from '@lucide/astro/icons/download';
 import Play from '@lucide/astro/icons/play';
-import Search from '@lucide/astro/icons/search';
-import photo from '../assets/photo.jpg';
-import { keyFigures, profile, stack } from '../data/profile';
+import { profile } from '../data/profile';
 
-// Home page, phase 2 in progress: the first screen is done, the sections below come next.
-const [rulesFirst, leadsByRules, repeatRun] = keyFigures;
-const labelClass = 'font-mono text-[11px] tracking-wider text-muted uppercase';
+const description =
+  'AI automation & agents engineer: AI voice agents, LLM pipelines, RAG and CRM integrations on n8n, JavaScript and REST APIs. Try the live demos.';
+
+// Structured data for search engines. No employer here on purpose: lead with skills and proof.
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  jobTitle: profile.title,
+  url: Astro.site?.href,
+  email: `mailto:${profile.email}`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Uzhhorod', addressCountry: 'UA' },
+  sameAs: [profile.links.github, profile.links.linkedin],
+  knowsAbout: [
+    'AI automation',
+    'AI voice agents',
+    'LLM pipelines',
+    'Retrieval-augmented generation',
+    'Vector databases',
+    'CRM integrations',
+    'n8n',
+    'TypeScript',
+  ],
+  knowsLanguage: ['en', 'de', 'uk', 'ru'],
+};
 ---
 
-<BaseLayout
-  title={`${profile.name} · ${profile.title}`}
-  description="I connect AI voice agents, LLMs, RAG and CRMs with n8n, JavaScript and REST APIs, and keep them running in production. Try the live demos."
->
-  <div class="relative min-h-dvh overflow-hidden">
+<BaseLayout title={`${profile.name} · ${profile.title}`} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(person)} />
+  <!-- overflow-x-clip (not hidden) keeps the sticky header working while clipping the backdrop. -->
+  <div class="relative overflow-x-clip">
     <Backdrop />
     <SiteHeader />
 
-    <main class="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+    <main class="relative mx-auto max-w-6xl px-4 sm:px-6">
+      <!-- Name first: it is what a recruiter looks for in the first seconds. -->
       <section class="pt-14 sm:pt-24">
-        <AvailabilityBadge href={`mailto:${profile.email}`}>
+        <AvailabilityBadge href="#contact">
           {profile.availability} · {profile.timezone}
         </AvailabilityBadge>
-        <!-- Name first: it is what a recruiter looks for in the first seconds. -->
         <h1 class="mt-6 max-w-4xl text-display font-semibold">
           {profile.name}
           <span class="block text-muted">{profile.title}</span>
         </h1>
-        <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
-          {profile.pitch} Don't take my word for it: run them below.
-        </p>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">{profile.pitch}</p>
         <div class="mt-8 flex flex-wrap gap-3">
           <Button href="#playground">
             <Play aria-hidden="true" /> Try the playground
           </Button>
-          <Button href="/cv" variant="secondary">
+          <Button href={profile.cv} variant="secondary" download>
             <Download aria-hidden="true" /> Download CV
           </Button>
           <Button href={`mailto:${profile.email}`} variant="ghost">
@@ -53,90 +74,16 @@ const labelClass = 'font-mono text-[11px] tracking-wider text-muted uppercase';
         </div>
       </section>
 
-      <section class="mt-16 grid gap-3 sm:mt-20 sm:grid-cols-6 lg:grid-cols-12" aria-label="Overview">
-        <Card as="article" class="flex flex-col sm:col-span-6 lg:col-span-4 lg:row-span-2">
-          <Image
-            src={photo}
-            alt={profile.name}
-            width={160}
-            height={160}
-            loading="eager"
-            class="size-20 rounded-xl object-cover"
-          />
-          <!-- What a remote employer checks: time zone overlap, remote track record, languages. -->
-          <dl class="mt-6 space-y-3 border-t border-border pt-5 text-sm lg:mt-auto">
-            <div>
-              <dt class={labelClass}>Based in</dt>
-              <dd class="mt-0.5">
-                {profile.location} · {profile.timezone}
-              </dd>
-            </div>
-            <div>
-              <dt class={labelClass}>Remote</dt>
-              <dd class="mt-0.5">{profile.remote}</dd>
-            </div>
-            <div>
-              <dt class={labelClass}>Languages</dt>
-              <dd class="mt-0.5">{profile.languages}</dd>
-            </div>
-          </dl>
-        </Card>
-
-        <Card href="#playground" class="group flex flex-col gap-6 sm:col-span-6 lg:col-span-8">
-          <div class="flex items-center justify-between gap-3">
-            <p class={labelClass}>Live pipeline · Level 4</p>
-            <ArrowUpRight
-              size={16}
-              class="text-muted transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              aria-hidden="true"
-            />
-          </div>
-          <PipelineMini
-            nodes={[
-              { name: 'Webhook', status: 'ok' },
-              { name: 'Rules', status: 'ok' },
-              { name: 'LLM', status: 'running' },
-              { name: 'CRM', status: 'idle' },
-            ]}
-          />
-          <p class="text-sm text-muted">
-            Submit a lead and watch it travel through the workflow into a CRM. Then take the CRM down.
-          </p>
-        </Card>
-
-        <Card as="article" class="sm:col-span-3 lg:col-span-4">
-          <p class="text-5xl font-semibold tracking-[-0.04em] tabular-nums">{rulesFirst.value}</p>
-          <p class="mt-3 text-sm leading-snug text-muted">{rulesFirst.label}</p>
-        </Card>
-
-        <Card href="#playground" class="group flex flex-col gap-4 sm:col-span-3 lg:col-span-4">
-          <p class={labelClass}>Ask my CV · RAG</p>
-          <span class="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2.5 text-sm text-muted transition-colors group-hover:border-border-strong">
-            <Search size={15} aria-hidden="true" />
-            Has he built RAG on a vector database?
-          </span>
-          <p class="mt-auto text-sm text-muted">Hybrid search over pgvector, answers with sources.</p>
-        </Card>
-
-        <Card as="article" class="sm:col-span-6 lg:col-span-6">
-          <p class={labelClass}>Stack</p>
-          <dl class="mt-4 space-y-3">
-            {stack.map(({ group, items }) => (
-              <div class="grid gap-1 sm:grid-cols-[7.5rem_1fr]">
-                <dt class="text-sm text-muted">{group}</dt>
-                <dd class="text-sm">{items.join(' · ')}</dd>
-              </div>
-            ))}
-          </dl>
-        </Card>
-
-        {[leadsByRules, repeatRun].map(({ value, label }) => (
-          <Card as="article" class="sm:col-span-3 lg:col-span-3">
-            <p class="text-5xl font-semibold tracking-[-0.04em] tabular-nums">{value}</p>
-            <p class="mt-3 text-sm leading-snug text-muted">{label}</p>
-          </Card>
-        ))}
-      </section>
+      <Overview />
+      <div class="mt-20 sm:mt-28">
+        <Playground />
+        <Projects />
+        <Experience />
+        <Skills />
+        <Approach />
+        <Contact />
+      </div>
     </main>
   </div>
+  <SiteFooter />
 </BaseLayout>

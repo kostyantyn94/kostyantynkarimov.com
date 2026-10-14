@@ -8,14 +8,18 @@ interface Props {
   description: string;
   /** Keep internal pages (style guide, drafts) out of search results. */
   noindex?: boolean;
+  /** Social preview image (1200×630), relative to the site root. */
+  image?: string;
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, image = '/og.png' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<!-- Dark is the default theme; a visitor's own choice (localStorage) wins. -->
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,27 +28,28 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#08090a" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#08090a" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
-    <!-- Set the theme before first paint so there is no light/dark flash. -->
     <script is:inline>
+      // Apply a stored light/dark choice before first paint, so there is no flash.
       (() => {
         let theme;
         try {
           theme = localStorage.getItem('theme');
         } catch {}
-        if (theme !== 'light' && theme !== 'dark') {
-          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        document.documentElement.dataset.theme = theme;
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
       })();
     </script>
+    <slot name="head" />
   </head>
   <body>
     <slot />

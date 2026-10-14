@@ -6,13 +6,15 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 // Internal pages that must not reach search engines.
-const NOT_IN_SITEMAP = ['/styleguide', '/preview'];
+const NOT_IN_SITEMAP = ['/styleguide', '/og', '/cv'];
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://kostyantynkarimov.com',
   trailingSlash: 'never',
   devToolbar: { enabled: false },
+  // Short link for the CV, e.g. on LinkedIn or in emails.
+  redirects: { '/cv': '/Kostyantyn_Karimov_CV.pdf' },
   integrations: [
     react(),
     sitemap({
