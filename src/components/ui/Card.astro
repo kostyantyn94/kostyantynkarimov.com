@@ -4,8 +4,8 @@ import { cx } from '../../lib/cx';
 interface Props {
   /** Renders the card as a link. */
   href?: string;
-  as?: 'div' | 'article' | 'li';
-  /** Hover lift without a link, e.g. for a card with its own button inside. */
+  as?: 'div' | 'article' | 'li' | 'section';
+  /** Hover state without a link, e.g. for a card with its own button inside. */
   interactive?: boolean;
   class?: string;
 }
@@ -14,12 +14,12 @@ const { href, as = 'div', interactive = false, class: className } = Astro.props;
 const Tag = href ? 'a' : as;
 ---
 
+<!-- A bento tile: translucent surface over the backdrop, hairline border, no lift on hover. -->
 <Tag
   href={href}
   class={cx(
-    'block rounded-xl border border-border bg-surface p-5',
-    (href || interactive) &&
-      'transition-[border-color,translate] duration-200 ease-out-soft hover:-translate-y-0.5 hover:border-border-strong',
+    'block rounded-2xl border border-border bg-surface/80 p-5',
+    (href || interactive) && 'transition-colors duration-200 hover:border-border-strong',
     className,
   )}
 >

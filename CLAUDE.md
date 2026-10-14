@@ -12,7 +12,7 @@ Facts about Kostya come only from those notes and his CV. Do not invent metrics.
 
 - Tokens live in `src/styles/global.css` as CSS variables for both themes (`[data-theme='dark']`), mapped to Tailwind colors in `@theme inline`. Default Tailwind colors are disabled on purpose: use `bg-bg`, `bg-surface`, `text-ink`, `text-muted`, `border-border`, `text-ok` / `text-review` / `text-error`.
 - Status colors mark pipeline states only. Keep text at WCAG AA (4.5:1) in both themes; `--faint` is decorative only.
-- Monochrome by design: do not add accent colors or gradients without asking Kostya.
+- Look: "product dark" (Linear / Vercel style), monochrome, Geist and Geist Mono, bento tiles (`Card`) over the `Backdrop`. Do not add accent colors or gradients without asking Kostya.
 - Code is shown without font ligatures (`<=>` must read as typed).
 - Every new component goes on `/styleguide` too.
 

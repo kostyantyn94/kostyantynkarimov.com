@@ -1,0 +1,22 @@
+---
+// Decorative page backdrop: a dot grid fading out from the top and, in the dark theme, a soft top light.
+// Place it as the first child of a `relative overflow-hidden` wrapper.
+---
+
+<div aria-hidden="true" class="backdrop-dots pointer-events-none absolute inset-x-0 top-0 h-[720px]"></div>
+<div
+  aria-hidden="true"
+  class="backdrop-glow pointer-events-none absolute -top-56 left-1/2 h-[560px] w-[1100px] -translate-x-1/2"
+></div>
+
+<style>
+  .backdrop-dots {
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 0%, #000 30%, transparent 100%);
+  }
+
+  .backdrop-glow {
+    background: radial-gradient(closest-side, var(--glow), transparent);
+  }
+</style>

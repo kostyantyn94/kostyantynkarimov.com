@@ -1,0 +1,30 @@
+---
+import StatusPill, { type Status } from './StatusPill.astro';
+import { cx } from '../../lib/cx';
+
+interface Node {
+  name: string;
+  status: Status;
+}
+
+interface Props {
+  nodes: Node[];
+  class?: string;
+}
+
+const { nodes, class: className } = Astro.props;
+---
+
+<!-- Decorative teaser of the Live Pipeline demo: a packet travels along the line between the nodes. -->
+<div class={cx('relative', className)}>
+  <div class="absolute inset-x-6 top-1/2 h-px bg-border-strong" aria-hidden="true"></div>
+  <div class="absolute top-1/2 size-1.5 -translate-y-1/2 animate-packet rounded-full bg-ink" aria-hidden="true"></div>
+  <ol class="relative grid gap-2" style={{ gridTemplateColumns: `repeat(${nodes.length}, minmax(0, 1fr))` }}>
+    {nodes.map(({ name, status }) => (
+      <li class="flex flex-col items-center gap-2 rounded-xl border border-border bg-bg px-2 py-3">
+        <span class="text-sm font-medium">{name}</span>
+        <StatusPill status={status} />
+      </li>
+    ))}
+  </ol>
+</div>

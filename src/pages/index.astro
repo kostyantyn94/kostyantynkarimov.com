@@ -1,29 +1,139 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import AvailabilityBadge from '../components/ui/AvailabilityBadge.astro';
+import Backdrop from '../components/ui/Backdrop.astro';
 import Button from '../components/ui/Button.astro';
-import ThemeToggle from '../components/ui/ThemeToggle.astro';
+import Card from '../components/ui/Card.astro';
+import PipelineMini from '../components/ui/PipelineMini.astro';
+import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
+import Download from '@lucide/astro/icons/download';
+import Play from '@lucide/astro/icons/play';
+import Search from '@lucide/astro/icons/search';
+import photo from '../assets/photo.jpg';
+import { keyFigures, profile, stack } from '../data/profile';
+
+// Home page, phase 2 in progress: the first screen is done, the sections below come next.
+const [rulesFirst, leadsByRules, repeatRun] = keyFigures;
+const labelClass = 'font-mono text-[11px] tracking-wider text-muted uppercase';
 ---
 
-<!-- Placeholder until the real home page is built (phase 2). -->
 <BaseLayout
-  title="Kostyantyn Karimov · AI Automation & Agents Engineer"
-  description="I connect AI voice agents, LLMs, RAG and CRMs with n8n, JavaScript and REST APIs, and keep them running in production."
+  title={`${profile.name} · ${profile.title}`}
+  description="I connect AI voice agents, LLMs, RAG and CRMs with n8n, JavaScript and REST APIs, and keep them running in production. Try the live demos."
 >
-  <main class="mx-auto flex min-h-dvh max-w-5xl flex-col justify-center gap-6 px-4 py-16 sm:px-6">
-    <div class="absolute top-4 right-4 sm:right-6">
-      <ThemeToggle />
-    </div>
-    <p class="font-mono text-xs tracking-[0.12em] text-muted uppercase">Site in progress</p>
-    <h1 class="text-display font-bold">Kostyantyn Karimov</h1>
-    <p class="text-xl font-semibold text-ink">AI Automation &amp; Agents Engineer</p>
-    <p class="max-w-xl text-base leading-relaxed text-muted">
-      n8n · LLM pipelines · RAG &amp; vector search · AI voice agents ↔ CRM · JavaScript / TypeScript
-    </p>
-    <div class="flex flex-wrap gap-3">
-      <Button href="mailto:kostyantyn.karimov@gmail.com">Email me</Button>
-      <Button href="/styleguide" variant="secondary">
-        Style guide
-      </Button>
-    </div>
-  </main>
+  <div class="relative min-h-dvh overflow-hidden">
+    <Backdrop />
+    <SiteHeader />
+
+    <main class="relative mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+      <section class="pt-14 sm:pt-24">
+        <AvailabilityBadge href={`mailto:${profile.email}`}>
+          {profile.availability} · {profile.timezone}
+        </AvailabilityBadge>
+        <h1 class="mt-6 max-w-4xl text-display font-semibold">
+          AI agents, LLMs and CRMs, <span class="text-muted">wired into automations that work in production.</span>
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+          {profile.title}. {profile.focus.join(' · ')}.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href="#playground">
+            <Play aria-hidden="true" /> Try the playground
+          </Button>
+          <Button href="/cv" variant="secondary">
+            <Download aria-hidden="true" /> Download CV
+          </Button>
+          <Button href={`mailto:${profile.email}`} variant="ghost">
+            Email me
+          </Button>
+        </div>
+      </section>
+
+      <section class="mt-16 grid gap-3 sm:mt-20 sm:grid-cols-6 lg:grid-cols-12" aria-label="Overview">
+        <Card as="article" class="flex flex-col sm:col-span-6 lg:col-span-4 lg:row-span-2">
+          <Image
+            src={photo}
+            alt={profile.name}
+            width={160}
+            height={160}
+            loading="eager"
+            class="size-20 rounded-xl object-cover"
+          />
+          <h2 class="mt-5 text-lg font-semibold tracking-tight">{profile.name}</h2>
+          <p class="text-sm text-muted">{profile.title}</p>
+          <dl class="mt-6 space-y-3 border-t border-border pt-5 text-sm lg:mt-auto">
+            <div>
+              <dt class={labelClass}>Now</dt>
+              <dd class="mt-0.5">
+                {profile.current.role}, {profile.current.company}
+              </dd>
+            </div>
+            <div>
+              <dt class={labelClass}>Based in</dt>
+              <dd class="mt-0.5">
+                {profile.location} · {profile.timezone}
+              </dd>
+            </div>
+          </dl>
+        </Card>
+
+        <Card href="#playground" class="group flex flex-col gap-6 sm:col-span-6 lg:col-span-8">
+          <div class="flex items-center justify-between gap-3">
+            <p class={labelClass}>Live pipeline · Level 4</p>
+            <ArrowUpRight
+              size={16}
+              class="text-muted transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+          </div>
+          <PipelineMini
+            nodes={[
+              { name: 'Webhook', status: 'ok' },
+              { name: 'Rules', status: 'ok' },
+              { name: 'LLM', status: 'running' },
+              { name: 'CRM', status: 'idle' },
+            ]}
+          />
+          <p class="text-sm text-muted">
+            Submit a lead and watch it travel through the workflow into a CRM. Then take the CRM down.
+          </p>
+        </Card>
+
+        <Card as="article" class="sm:col-span-3 lg:col-span-4">
+          <p class="text-5xl font-semibold tracking-[-0.04em] tabular-nums">{rulesFirst.value}</p>
+          <p class="mt-3 text-sm leading-snug text-muted">{rulesFirst.label}</p>
+        </Card>
+
+        <Card href="#playground" class="group flex flex-col gap-4 sm:col-span-3 lg:col-span-4">
+          <p class={labelClass}>Ask my CV · RAG</p>
+          <span class="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2.5 text-sm text-muted transition-colors group-hover:border-border-strong">
+            <Search size={15} aria-hidden="true" />
+            Has he built RAG on a vector database?
+          </span>
+          <p class="mt-auto text-sm text-muted">Hybrid search over pgvector, answers with sources.</p>
+        </Card>
+
+        <Card as="article" class="sm:col-span-6 lg:col-span-6">
+          <p class={labelClass}>Stack</p>
+          <dl class="mt-4 space-y-3">
+            {stack.map(({ group, items }) => (
+              <div class="grid gap-1 sm:grid-cols-[7.5rem_1fr]">
+                <dt class="text-sm text-muted">{group}</dt>
+                <dd class="text-sm">{items.join(' · ')}</dd>
+              </div>
+            ))}
+          </dl>
+        </Card>
+
+        {[leadsByRules, repeatRun].map(({ value, label }) => (
+          <Card as="article" class="sm:col-span-3 lg:col-span-3">
+            <p class="text-5xl font-semibold tracking-[-0.04em] tabular-nums">{value}</p>
+            <p class="mt-3 text-sm leading-snug text-muted">{label}</p>
+          </Card>
+        ))}
+      </section>
+    </main>
+  </div>
 </BaseLayout>

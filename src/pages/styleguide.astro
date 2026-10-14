@@ -1,11 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import AvailabilityBadge from '../components/ui/AvailabilityBadge.astro';
+import Backdrop from '../components/ui/Backdrop.astro';
 import Button from '../components/ui/Button.astro';
 import Card from '../components/ui/Card.astro';
 import Chip from '../components/ui/Chip.astro';
 import CodeBlock from '../components/ui/CodeBlock.astro';
 import KeyFigures from '../components/ui/KeyFigures.astro';
 import LevelBadge from '../components/ui/LevelBadge.astro';
+import PipelineMini from '../components/ui/PipelineMini.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import StatusPill, { type Status } from '../components/ui/StatusPill.astro';
 import ThemeToggle from '../components/ui/ThemeToggle.astro';
@@ -16,6 +19,7 @@ import Download from '@lucide/astro/icons/download';
 import Mail from '@lucide/astro/icons/mail';
 import Play from '@lucide/astro/icons/play';
 import Workflow from '@lucide/astro/icons/workflow';
+import { keyFigures } from '../data/profile';
 
 const swatches = [
   { token: 'bg', use: 'Page background' },
@@ -30,13 +34,6 @@ const swatches = [
   { token: 'ok', use: 'Pipeline: done' },
   { token: 'review', use: 'Pipeline: needs a human' },
   { token: 'error', use: 'Pipeline: failed' },
-];
-
-const figures = [
-  { value: '82%', label: 'of software items classified without an LLM call' },
-  { value: '67%', label: 'of leads decided by rules, no model involved' },
-  { value: '0', label: 'LLM and CRM calls when the same data arrives again' },
-  { value: '4+ yrs', label: 'working remotely' },
 ];
 
 const pipeline: { name: string; icon: typeof Workflow; status: Status; meta: string }[] = [
@@ -128,7 +125,7 @@ const jsonSample = `{
       as="h1"
       eyebrow="Base"
       title="Style guide"
-      lead="Tokens and components every page is built from. Same dark monochrome system as the CV: light theme is the CV's main column, dark theme is its sidebar."
+      lead="Tokens and components every page is built from. Direction A, product dark: zinc neutrals, near-black with a faint cool tint, hairline borders, Geist. Monochrome, like the CV."
     />
 
     <!-- Color -->
@@ -159,10 +156,10 @@ const jsonSample = `{
       <SectionHeading
         eyebrow="02 · Type"
         title="Typography"
-        lead="Inter for text, JetBrains Mono for code, data and labels."
+        lead="Geist for text, Geist Mono for code, data and labels."
       />
       <div class="space-y-6 border-l border-border pl-5">
-        <p class="text-display font-bold">Kostyantyn Karimov</p>
+        <p class="text-display font-semibold">Kostyantyn Karimov</p>
         <p class="text-4xl font-semibold tracking-tight">Heading 1 · 36px</p>
         <p class="text-2xl font-semibold tracking-tight sm:text-3xl">Heading 2 · 30px</p>
         <p class="text-xl font-semibold">Heading 3 · 20px</p>
@@ -243,12 +240,25 @@ const jsonSample = `{
     <!-- Data -->
     <section class="space-y-8">
       <SectionHeading eyebrow="05 · Data" title="Key figures" lead="A strip with hairline dividers, as in the CV." />
-      <KeyFigures figures={figures} />
+      <KeyFigures figures={[...keyFigures]} />
     </section>
 
     <!-- Cards -->
     <section class="space-y-8">
-      <SectionHeading eyebrow="06 · Cards" title="Demo and project cards" />
+      <SectionHeading
+        eyebrow="06 · Tiles"
+        title="Bento tiles and cards"
+        lead="Translucent surface over the backdrop, hairline border that brightens on hover. No lift, no shadow."
+      />
+      <div class="relative overflow-hidden rounded-2xl border border-border bg-bg px-5 py-12">
+        <Backdrop />
+        <div class="relative space-y-4">
+          <AvailabilityBadge>Open to remote work · UTC+2</AvailabilityBadge>
+          <p class="max-w-md text-sm text-muted">
+            Backdrop: a dot grid fading from the top and, in the dark theme, a soft top light.
+          </p>
+        </div>
+      </div>
       <div class="grid gap-4 md:grid-cols-2">
         <Card href="#" class="group flex flex-col gap-4">
           <LevelBadge level={3} />
@@ -294,8 +304,18 @@ const jsonSample = `{
       <SectionHeading
         eyebrow="07 · Pipeline"
         title="Workflow nodes"
-        lead="Static preview of how the Live Pipeline demo will look. The real one runs step by step."
+        lead="The animated teaser from the home page, and the static nodes the Live Pipeline demo will use."
       />
+      <Card class="max-w-2xl">
+        <PipelineMini
+          nodes={[
+            { name: 'Webhook', status: 'ok' },
+            { name: 'Rules', status: 'ok' },
+            { name: 'LLM', status: 'running' },
+            { name: 'CRM', status: 'idle' },
+          ]}
+        />
+      </Card>
       <ol class="flex items-stretch gap-2 overflow-x-auto pb-2">
         {pipeline.map(({ name, icon: Icon, status, meta }, index) => (
           <li class="flex shrink-0 items-center gap-2">

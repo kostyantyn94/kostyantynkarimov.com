@@ -1,0 +1,26 @@
+---
+import { cx } from '../../lib/cx';
+
+interface Props {
+  href?: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag
+  href={href}
+  class={cx(
+    'inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 py-1 pr-3 pl-2 text-xs text-muted backdrop-blur',
+    href && 'transition-colors hover:border-border-strong hover:text-ink',
+    className,
+  )}
+>
+  <span class="relative flex size-2" aria-hidden="true">
+    <span class="absolute inline-flex size-full animate-ping rounded-full bg-ok opacity-60"></span>
+    <span class="relative inline-flex size-2 rounded-full bg-ok"></span>
+  </span>
+  <slot />
+</Tag>

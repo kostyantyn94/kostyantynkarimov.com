@@ -12,7 +12,7 @@ vector database. Each demo shows the code that just ran.
 
 - [Astro 7](https://astro.build) for static pages, [React 19](https://react.dev) islands for the interactive demos
 - TypeScript everywhere
-- [Tailwind CSS 4](https://tailwindcss.com) with design tokens from my CV (dark monochrome, Inter, JetBrains Mono)
+- [Tailwind CSS 4](https://tailwindcss.com) with "product dark" design tokens (monochrome, hairlines, Geist and Geist Mono)
 - [Shiki](https://shiki.style) code highlighting at build time, light and dark themes in one render
 - [Lucide](https://lucide.dev) icons
 - [Vitest](https://vitest.dev) for demo logic, `astro check` for types, Prettier for formatting

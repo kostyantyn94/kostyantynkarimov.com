@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 // Internal pages that must not reach search engines.
-const NOT_IN_SITEMAP = ['/styleguide'];
+const NOT_IN_SITEMAP = ['/styleguide', '/preview'];
 
 // https://astro.build/config
 export default defineConfig({

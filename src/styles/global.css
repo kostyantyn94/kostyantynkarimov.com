@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
 /*
- * Design tokens. Source of truth: the "dark monochrome" CV (cv_dark_mono.html).
- * Light theme = the CV's main column, dark theme = the CV's sidebar.
+ * Design tokens, direction A "product dark" (chosen Oct 15, 2026): zinc-like neutrals,
+ * near-black with a faint cool tint, hairline borders, Geist. Monochrome like the CV: no accent hue.
  * Status colors are functional only (pipeline states), never decoration.
  */
 
@@ -10,34 +10,38 @@
 
 :root {
   color-scheme: light;
-  --bg: #ffffff;
-  --surface: #f7f7f9;
-  --surface-2: #eff0f3;
-  --border: #e2e3e8;
-  --border-strong: #c9ccd3;
-  --ink: #1b1f27;
-  --muted: #5f6470;
-  --faint: #a6abb5; /* decorative only (rules, markers), never body text */
-  --accent: #334155;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --ink: #09090b;
+  --muted: #5f5f67;
+  --faint: #a1a1aa; /* decorative only (rules, markers), never body text */
+  --accent: #09090b;
   --ok: #166534;
   --review: #92400e;
   --error: #b91c1c;
+  --glow: rgb(0 0 0 / 0); /* top light of the backdrop: only visible in the dark theme */
+  --dot: rgb(0 0 0 / 0.07);
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --bg: #111214;
-  --surface: #1a1c21;
-  --surface-2: #22252b;
-  --border: #2a2d34;
-  --border-strong: #3a3e47;
-  --ink: #e8e9ec;
-  --muted: #9a9ea8;
-  --faint: #5b5f69;
-  --accent: #c9ccd3;
+  --bg: #08090a;
+  --surface: #0f1012;
+  --surface-2: #16181b;
+  --border: #1f2125;
+  --border-strong: #2e3136;
+  --ink: #f2f2f3;
+  --muted: #8b8d94;
+  --faint: #4a4c52;
+  --accent: #f2f2f3;
   --ok: #4ade80;
   --review: #fbbf24;
   --error: #f87171;
+  --glow: rgb(255 255 255 / 0.075);
+  --dot: rgb(255 255 255 / 0.06);
 }
 
 @theme {
@@ -46,12 +50,29 @@
   --color-white: #ffffff;
   --color-black: #000000;
 
-  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
-  --text-display: clamp(2.5rem, 1.6rem + 3.6vw, 4.25rem);
-  --text-display--line-height: 1.02;
-  --text-display--letter-spacing: -0.035em;
+  --text-display: clamp(2.4rem, 1.2rem + 4.8vw, 4.75rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.045em;
+
+  --animate-packet: packet 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+
+  @keyframes packet {
+    from {
+      left: 1.5rem;
+      opacity: 0;
+    }
+    10%,
+    90% {
+      opacity: 1;
+    }
+    to {
+      left: calc(100% - 1.5rem);
+      opacity: 0;
+    }
+  }
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
