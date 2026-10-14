@@ -4,6 +4,7 @@ import type { ModelMode } from '../../demos/llm';
 import { RULES } from '../../demos/rules';
 import { SCENARIOS, type Level, type Options } from '../../demos/scenarios';
 import type { Run, StepStatus } from '../../demos/types';
+import PipelineCanvas from './PipelineCanvas';
 
 interface Props {
   /** Source of each scenario's module, highlighted at build time (no highlighter shipped to the browser). */
@@ -64,14 +65,16 @@ export default function Playground({ code }: Props) {
   const [options, setOptions] = useState<Options>({ model: 'normal', crmDown: false, disabledRules: [] });
   const [run, setRun] = useState<Run | null>(null);
   const [shown, setShown] = useState(0);
-  const [tab, setTab] = useState<'request' | 'result' | 'code'>('result');
+  const [tab, setTab] = useState<'request' | 'canvas' | 'log' | 'code'>('canvas');
+  // The last result view the visitor chose (canvas or log); a new run returns to it.
+  const view = useRef<'canvas' | 'log'>('canvas');
   const timer = useRef<number | undefined>(undefined);
 
   // Run, then reveal the log line by line so the flow is readable.
   const start = useCallback((nextLevel: Level, text: string, nextOptions: Options) => {
     const result = execute(nextLevel, text, nextOptions);
     setRun(result);
-    setTab('result');
+    setTab(view.current);
     window.clearInterval(timer.current);
     const total = result.steps.length + 1;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -216,13 +219,16 @@ export default function Playground({ code }: Props) {
 
       <div className="flex items-center justify-between gap-3 border-b border-border py-1.5 pr-2 pl-2">
         <div role="tablist" aria-label="View" className="flex gap-0.5">
-          {(['request', 'result', 'code'] as const).map((id) => (
+          {(['request', 'canvas', 'log', 'code'] as const).map((id) => (
             <button
               key={id}
               type="button"
               role="tab"
               aria-selected={tab === id}
-              onClick={() => setTab(id)}
+              onClick={() => {
+                setTab(id);
+                if (id === 'canvas' || id === 'log') view.current = id;
+              }}
               className={cx(
                 'rounded-md px-2.5 py-1.5 text-xs capitalize transition-colors',
                 tab === id ? 'bg-surface-2 text-ink' : 'text-muted hover:text-ink',
@@ -244,7 +250,7 @@ export default function Playground({ code }: Props) {
         </button>
       </div>
 
-      <div className="h-72 overflow-auto bg-bg/60 font-mono text-[12.5px] leading-6">
+      <div className="h-80 overflow-auto bg-bg/60 font-mono text-[12.5px] leading-6">
         {tab === 'request' && (
           <div className="flex h-full flex-col">
             <p className="px-4 pt-3 text-[11px] text-muted">{scenario.input}</p>
@@ -264,7 +270,9 @@ export default function Playground({ code }: Props) {
           </div>
         )}
 
-        {tab === 'result' && run && (
+        {tab === 'canvas' && run && <PipelineCanvas run={run} shown={shown} />}
+
+        {tab === 'log' && run && (
           <ol className="px-4 py-3" aria-live="polite">
             {run.steps.slice(0, shown).map((step, index) => (
               <li

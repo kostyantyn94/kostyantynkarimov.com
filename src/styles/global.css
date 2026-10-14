@@ -208,3 +208,19 @@
   font-size: 12px;
   line-height: 1.6;
 }
+
+/* n8n-style canvas: dotted background, animated connection into the running node. */
+.canvas-grid {
+  background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.canvas-flow {
+  animation: canvas-flow 0.6s linear infinite;
+}
+
+@keyframes canvas-flow {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
