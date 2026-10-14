@@ -1,23 +1,40 @@
 ---
+import { codeToHtml } from 'shiki';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
-import Approach from '../components/home/Approach.astro';
-import Contact from '../components/home/Contact.astro';
-import Experience from '../components/home/Experience.astro';
-import Overview from '../components/home/Overview.astro';
-import Playground from '../components/home/Playground.astro';
-import Projects from '../components/home/Projects.astro';
-import Skills from '../components/home/Skills.astro';
+import Playground from '../components/playground/Playground.tsx';
 import AvailabilityBadge from '../components/ui/AvailabilityBadge.astro';
 import Backdrop from '../components/ui/Backdrop.astro';
 import Button from '../components/ui/Button.astro';
+import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
 import Download from '@lucide/astro/icons/download';
-import Play from '@lucide/astro/icons/play';
-import { profile } from '../data/profile';
+import Mail from '@lucide/astro/icons/mail';
+import leadSource from '../demos/lead.ts?raw';
+import llmSource from '../demos/llm.ts?raw';
+import rulesSource from '../demos/rules.ts?raw';
+import scenariosSource from '../demos/scenarios.ts?raw';
+import { profile, projects } from '../data/profile';
 
 const description =
-  'AI automation & agents engineer: AI voice agents, LLM pipelines, RAG and CRM integrations on n8n, JavaScript and REST APIs. Try the live demos.';
+  'AI automation & agents engineer. Run a live integration in the browser: webhook, rules, LLM with guardrails, full pipeline to a CRM.';
+
+// The Code tab shows exactly the modules the console runs, highlighted here at build time.
+const highlight = (source: string) =>
+  codeToHtml(source.trim(), {
+    lang: 'ts',
+    themes: { light: 'vitesse-light', dark: 'vitesse-dark' },
+    defaultColor: false,
+  });
+const pipelineSource = scenariosSource.slice(
+  scenariosSource.indexOf('/** Expert'),
+  scenariosSource.indexOf('export interface Sample'),
+);
+const code = {
+  easy: await highlight(leadSource),
+  medium: await highlight(rulesSource),
+  hard: await highlight(llmSource),
+  expert: await highlight(pipelineSource),
+};
 
 // Structured data for search engines. No employer here on purpose: lead with skills and proof.
 const person = {
@@ -33,11 +50,10 @@ const person = {
     'AI automation',
     'AI voice agents',
     'LLM pipelines',
-    'Retrieval-augmented generation',
+    'RAG',
     'Vector databases',
     'CRM integrations',
     'n8n',
-    'TypeScript',
   ],
   knowsLanguage: ['en', 'de', 'uk', 'ru'],
 };
@@ -45,45 +61,86 @@ const person = {
 
 <BaseLayout title={`${profile.name} · ${profile.title}`} description={description}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(person)} />
-  <!-- overflow-x-clip (not hidden) keeps the sticky header working while clipping the backdrop. -->
-  <div class="relative overflow-x-clip">
+  <div class="relative flex min-h-dvh flex-col overflow-x-clip">
     <Backdrop />
     <SiteHeader />
 
-    <main class="relative mx-auto max-w-6xl px-4 sm:px-6">
-      <!-- Name first: it is what a recruiter looks for in the first seconds. -->
-      <section class="pt-14 sm:pt-24">
-        <AvailabilityBadge href="#contact">
-          {profile.availability} · {profile.timezone}
-        </AvailabilityBadge>
-        <h1 class="mt-6 max-w-4xl text-display font-semibold">
-          {profile.name}
-          <span class="block text-muted">{profile.title}</span>
-        </h1>
-        <p class="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">{profile.pitch}</p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <Button href="#playground">
-            <Play aria-hidden="true" /> Try the playground
-          </Button>
-          <Button href={profile.cv} variant="secondary" download>
-            <Download aria-hidden="true" /> Download CV
-          </Button>
-          <Button href={`mailto:${profile.email}`} variant="ghost">
-            Email me
-          </Button>
+    <main class="relative mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6">
+      <!-- The business card (columns 1-5) next to the thing it is about: a console you can run (6-12). -->
+      <section class="grid gap-x-6 gap-y-12 pt-10 pb-16 sm:pt-16 lg:min-h-[calc(100dvh-4rem)] lg:grid-cols-12 lg:items-center lg:py-12">
+        <div class="lg:col-span-5">
+          <AvailabilityBadge>
+            {profile.availability} · {profile.timezone}
+          </AvailabilityBadge>
+          <h1 class="mt-7">
+            <span class="block text-[clamp(2.75rem,1.5rem+3.4vw,4rem)] leading-[0.95] font-semibold tracking-[-0.045em]">
+              {profile.name}
+            </span>
+            <span class="mt-4 block text-xl font-medium tracking-[-0.02em] text-muted sm:text-2xl">
+              {profile.title}
+            </span>
+          </h1>
+          <p class="mt-6 max-w-md text-base leading-relaxed text-muted sm:text-lg">{profile.pitch}</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <Button href={`mailto:${profile.email}`}>
+              <Mail aria-hidden="true" /> Email me
+            </Button>
+            <Button href={profile.cv} variant="secondary" download>
+              <Download aria-hidden="true" /> Download CV
+            </Button>
+          </div>
+          <p class="mt-8 font-mono text-xs text-muted">{profile.location} · English B2+ · German B2</p>
+        </div>
+
+        <div class="lg:col-span-7">
+          <Playground client:load code={code} />
         </div>
       </section>
 
-      <Overview />
-      <div class="mt-20 sm:mt-28">
-        <Playground />
-        <Projects />
-        <Experience />
-        <Skills />
-        <Approach />
-        <Contact />
-      </div>
+      <section class="border-t border-border py-14" aria-labelledby="projects-title">
+        <h2 id="projects-title" class="font-mono text-[11px] tracking-wider text-muted uppercase">
+          Open-source projects
+        </h2>
+        <ul class="mt-6 divide-y divide-border">
+          {projects.map(({ name, title, repo, proof }) => (
+            <li>
+              <a
+                href={repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group grid gap-1 py-5 sm:grid-cols-[12rem_1fr_auto] sm:items-baseline sm:gap-6"
+              >
+                <span class="inline-flex items-center gap-1.5 font-medium">
+                  {name}
+                  <ArrowUpRight
+                    size={15}
+                    class="text-muted transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ink"
+                    aria-hidden="true"
+                  />
+                </span>
+                <span class="text-muted">{title}</span>
+                <span class="font-mono text-sm text-muted">
+                  <span class="text-ink">{proof[0].value}</span> {proof[0].label}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     </main>
+
+    <footer class="relative border-t border-border">
+      <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <a href={`mailto:${profile.email}`} class="font-mono text-ink hover:underline">
+          {profile.email}
+        </a>
+        <p>
+          Built with Astro and TypeScript ·{' '}
+          <a href={profile.links.source} target="_blank" rel="noopener noreferrer" class="text-ink hover:underline">
+            source
+          </a>
+        </p>
+      </div>
+    </footer>
   </div>
-  <SiteFooter />
 </BaseLayout>

@@ -8,6 +8,7 @@ export const profile = {
   timezone: 'UTC+2',
   availability: 'Open to remote work',
   remote: '4+ years, fully remote',
+  openTo: 'Full-time, part-time or contract',
   languages: 'English B2+ · German B2 · Ukrainian, Russian native',
   email: 'kostyantyn.karimov@gmail.com',
   cv: '/Kostyantyn_Karimov_CV.pdf',

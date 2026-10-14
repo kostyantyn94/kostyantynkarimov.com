@@ -53,8 +53,9 @@
   --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
-  --text-display: clamp(2.4rem, 1.2rem + 4.8vw, 4.75rem);
-  --text-display--line-height: 0.98;
+  /* Sized so the name stays on one line inside 7 of 12 columns from 1024 px up. */
+  --text-display: clamp(2.5rem, 1rem + 3.6vw, 4rem);
+  --text-display--line-height: 1;
   --text-display--letter-spacing: -0.045em;
 
   --animate-packet: packet 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
@@ -71,6 +72,15 @@
     to {
       left: calc(100% - 1.5rem);
       opacity: 0;
+    }
+  }
+
+  --animate-fade-in: fade-in 0.2s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(2px);
     }
   }
 
@@ -165,23 +175,36 @@
  * and the active one is picked by data-theme. The background is ours, not the theme's.
  */
 .astro-code,
-.astro-code span {
+.astro-code span,
+.shiki,
+.shiki span {
   color: var(--shiki-light);
   font-style: var(--shiki-light-font-style);
   font-weight: var(--shiki-light-font-weight);
 }
 
 [data-theme='dark'] .astro-code,
-[data-theme='dark'] .astro-code span {
+[data-theme='dark'] .astro-code span,
+[data-theme='dark'] .shiki,
+[data-theme='dark'] .shiki span {
   color: var(--shiki-dark);
   font-style: var(--shiki-dark-font-style);
   font-weight: var(--shiki-dark-font-weight);
 }
 
-.astro-code {
+.astro-code,
+.shiki {
   background-color: transparent !important;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
   line-height: 1.7;
   tab-size: 2;
+}
+
+/* Code tab of the playground console (Shiki HTML rendered at build time). */
+.playground-code .shiki {
+  margin: 0;
+  padding: 0.5rem 1rem 1rem;
+  font-size: 12px;
+  line-height: 1.6;
 }
